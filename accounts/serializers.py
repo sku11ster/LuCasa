@@ -1,21 +1,51 @@
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
-from .models import User
+from django.contrib.auth.models import AbstractUser
+from .models import CustomUser  # Adjust the import path according to your project structure
+from allauth.account.models import EmailAddress
+from django.contrib.auth.forms import PasswordResetForm
 
-class LucasaRegisterSerializer(RegisterSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
+class CustomUserRegisterSerializer(RegisterSerializer):
+    """
+    Serializer for registering a new user account.
+    """
+    
+    user_type = serializers.ChoiceField(choices=CustomUser.USER_TYPE_CHOICES)
+    is_individual = serializers.BooleanField(required=False)
+    company_name = serializers.CharField(max_length=255, required=False, allow_null=True)
+    contact = serializers.CharField(max_length=15, required=False, allow_null=True)
+    address = serializers.CharField(allow_blank=True, required=False)
+    website = serializers.CharField(allow_blank=True, required=False)
+    bio = serializers.CharField(allow_blank=True, required=False)
+    social_links = serializers.JSONField(required=False)
+    profile_picture = serializers.ImageField(use_url=True, required=False,allow_null=True)
+    profile_banner = serializers.ImageField(use_url=True, required=False,allow_null=True)
 
-    def custom_signup(self, request, user):
-        user.user_type = self.validated_data.get('user_type', '')
-        user.is_individual = self.validated_data.get('is_individual', True)
-        user.company_name = self.validated_data.get('company_name', '')
-        user.contact_number = self.validated_data.get('contact_number', '')
-        user.profile_picture = self.validated_data.get('profile_picture', '')
-        user.profile_banner = self.validated_data.get('profile_banner', '')
-        user.address = self.validated_data.get('address', '')
-        user.website = self.validated_data.get('website', '')
-        user.bio = self.validated_data.get('bio', '')
-        user.social_media_links = self.validated_data.get('social_media_links', '')
+    def save(self, request):
+        user = super().save(request)
+        user.user_type = self.validated_data.get('user_type', user.user_type)
+        user.is_individual = self.validated_data.get('is_individual', user.is_individual)
+        user.company_name = self.validated_data.get('company_name', user.company_name)
+        user.contact = self.validated_data.get('contact', user.contact)
+        user.address = self.validated_data.get('address', user.address)
+        user.website = self.validated_data.get('website', user.website)
+        user.bio = self.validated_data.get('bio', user.bio)
+        user.social_links = self.validated_data.get('social_links', user.social_links)
+        user.profile_picture = self.validated_data.get('profile_picture', '/profile_pics/default.png')
+        user.profile_banner = self.validated_data.get('profile_banner', '/profile_banner/default.png')
         user.save()
+        return user
+    
+
+class CustomUserSerializer(serializers.ModelSerializer):
+    email_verified = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'user_type', 'is_individual', 'company_name', 'contact', 'address', 'website', 'bio', 'social_links', 'profile_picture', 'profile_banner', 'email_verified']
+
+    def get_email_verified(self, obj):
+        email_address = EmailAddress.objects.filter(user=obj, email=obj.email).first()
+        return email_address.verified if email_address else False 
+    
+

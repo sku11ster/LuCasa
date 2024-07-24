@@ -11,10 +11,19 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import accounts
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+# Media configurations
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Ensure default file storage is set up
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -26,6 +35,8 @@ SECRET_KEY = "django-insecure-j%-p2a)l2ryprqtgzh(4x(jy^s13r4%hdbsz2j5bbtcn*kzj13
 DEBUG = True
 
 ALLOWED_HOSTS = []
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
 
 
 # Application definition
@@ -38,6 +49,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    #my apps
+    'accounts',
+
     # 3rd parties
     'rest_framework',
     'rest_framework.authtoken',
@@ -46,9 +60,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
 
-    #my apps
-    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +72,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = "lucasa.urls"
@@ -86,40 +100,36 @@ WSGI_APPLICATION = "lucasa.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'lucasadb',
+        'USER': 'lucasa',
+        'PASSWORD': 'lucasaweb',
+        'HOST': 'localhost',  # Set to your PostgreSQL server address
+        'PORT': '5432',       # Default PostgreSQL port
     }
 }
+
 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = 'accounts.User'
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
-SITE_ID = 1
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-}
-DJANGO_ALLAUTH_ACCOUNT = {
-    'ACCOUNT_EMAIL_REQUIRED': True,
-    'ACCOUNT_UNIQUE_EMAIL': True,
-    'ACCOUNT_USERNAME_REQUIRED': True,
-    'ACCOUNT_AUTHENTICATION_METHOD': 'username',
-    'ACCOUNT_EMAIL_VERIFICATION': 'optional',
-}
+
+#email backend
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'murtazaahmed022@gmail.com'
+EMAIL_HOST_PASSWORD = 'xV7P3tS86bvU5XGN'
+
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -130,6 +140,40 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+REST_USE_JWT = True  # Optional, if you want to use JWTs
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+# Add this to specify your custom user model
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# DJ-Rest-Auth settings
+REST_AUTH = {
+    'REGISTER_SERIALIZER': 'accounts.serializers.CustomUserRegisterSerializer',
+}
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.TokenAuthentication',
+#         # Add other authentication classes if needed
+#     ],
+#     'DEFAULT_RENDERER_CLASSES': [
+#         'rest_framework.renderers.JSONRenderer',
+#     ],
+#     'DEFAULT_PARSER_CLASSES': [
+#         'rest_framework.parsers.JSONParser',
+#         # Add other parsers if needed
+#     ],
+# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
