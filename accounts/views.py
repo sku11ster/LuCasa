@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from allauth.account.utils import send_email_confirmation
 
 from django.contrib.auth import get_user_model
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from .serializers import CustomUserRegisterSerializer,CustomUserSerializer
 from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC,EmailAddress
 from django.contrib.auth import views as auth_views
@@ -23,6 +23,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
+from dj_rest_auth.views import PasswordResetView, PasswordResetConfirmView
 
 
 
@@ -81,66 +82,17 @@ class UserProfileView(APIView):
 # # User Password reset endpoint
 # class UserPasswordResetView(APIView):
 class CustomPasswordResetView(PasswordResetView):
-    """
-    Custom Password Reset View
-    """
+    permission_classes = [AllowAny]
+    
     def post(self, request, *args, **kwargs):
-        """
-        Handle POST request for password reset.
-        """
-        email = request.data.get('email')
-        if not email:
-            return Response({"email": ["This field is required."]}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user = User.objects.filter(email=email).first()
-        if user:
-            # Send email with reset link
-            subject = "Password Reset Request"
-            email_template_name = "password_reset_email.html"
-            context = {
-                'email': email,
-                'uid': urlsafe_base64_encode(user.pk),
-                'token': default_token_generator.make_token(user),
-                'protocol': 'http',
-                'domain': request.get_host(),
-                'site_name': 'My Site',
-            }
-            # Render email template here or use Django's built-in email
-            send_mail(
-                subject,
-                f"Please click the link to reset your password: http://{context['domain']}/password/reset/confirm/{context['uid']}/{context['token']}/",
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
-                fail_silently=False,
-            )
-        return Response({"message": "Password reset link has been sent."}, status=status.HTTP_200_OK)
-
+        response = super().post(request, *args, **kwargs)
+        return Response({"detail": "Password reset e-mail has been sent."}, status=response.status_code)
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-    """
-    Custom Password Reset Confirm View
-    """
+    permission_classes = [AllowAny]
+    
     def post(self, request, *args, **kwargs):
-        """
-        Handle POST request for password reset confirmation.
-        """
-        uidb64 = request.data.get('uid')
-        token = request.data.get('token')
-        new_password = request.data.get('new_password')
-
-        if not uidb64 or not token or not new_password:
-            return Response({"error": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            uid = urlsafe_base64_decode(uidb64).decode()
-            user = get_object_or_404(User, pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise ValidationError("Invalid user or token.")
-
-        if not default_token_generator.check_token(user, token):
-            return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
-
-        user.set_password(new_password)
-        user.save()
-
-        return Response({"message": "Password has been reset."}, status=status.HTTP_200_OK)
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == status.HTTP_400_BAD_REQUEST:
+            return Response({"detail": "Password reset unsuccessful. The password reset link was invalid, possibly because it has already been used. Please request a new password reset."}, status=response.status_code)
+        return Response({"detail": "Password has been reset with the new password."}, status=response.status_code)
