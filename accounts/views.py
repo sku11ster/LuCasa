@@ -55,6 +55,7 @@ class ConfirmEmailView(APIView):
 # User mail reconfirmation endpoint
 User = get_user_model()
 class ResendEmailConfirmationView(APIView):
+    permission_classes =[IsAuthenticated]
     def post(self, request, *args, **kwargs):
         email = request.data.get('email', None)
         if email:
@@ -79,14 +80,6 @@ class UserProfileView(APIView):
         serializer = CustomUserSerializer(request.user)
         return Response(serializer.data)
     
-# # User Password reset endpoint
-# class UserPasswordResetView(APIView):
-class CustomPasswordResetView(PasswordResetView):
-    permission_classes = [AllowAny]
-    
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        return Response({"detail": "Password reset e-mail has been sent."}, status=response.status_code)
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     permission_classes = [AllowAny]
