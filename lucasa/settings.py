@@ -162,17 +162,13 @@ REST_AUTH = {
 }
 
 # REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework.authentication.SessionAuthentication',
 #         'rest_framework.authentication.TokenAuthentication',
-#         # Add other authentication classes if needed
-#     ],
-#     'DEFAULT_RENDERER_CLASSES': [
+#     ),
+#     'DEFAULT_RENDERER_CLASSES': (
 #         'rest_framework.renderers.JSONRenderer',
-#     ],
-#     'DEFAULT_PARSER_CLASSES': [
-#         'rest_framework.parsers.JSONParser',
-#         # Add other parsers if needed
-#     ],
+#     ),
 # }
 
 # Internationalization

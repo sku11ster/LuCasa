@@ -96,3 +96,15 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
         if response.status_code == status.HTTP_400_BAD_REQUEST:
             return Response({"detail": "Password reset unsuccessful. The password reset link was invalid, possibly because it has already been used. Please request a new password reset."}, status=response.status_code)
         return Response({"detail": "Password has been reset with the new password."}, status=response.status_code)
+
+class AccountVerificationStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self,request):
+        user = request.user
+        try:
+            email_address = EmailAddress.objects.get(user=user,primary=True)
+            is_verified = email_address.verified
+            return Response({'is_verified': is_verified}, status=status.HTTP_200_OK)
+        except EmailAddress.DoesNotExist:
+            return Response({'error':'Primary email not found for user'},status=status.HTTP_404_NOT_FOUND)
+        
