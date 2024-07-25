@@ -3,8 +3,10 @@ from accounts.models import CustomUser
 from rest_framework import status
 from rest_framework.test import APITestCase
 from allauth.account.models import EmailAddress
-
+from django.core import mail
+import re
 # Create your tests here.
+
 class AuthenticationTests(APITestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(
@@ -13,8 +15,18 @@ class AuthenticationTests(APITestCase):
             password='testpassword'
             )
         self.email_address = EmailAddress.objects.create(
-            user=self.user,email='testuser@test.com',Primary=True,verified = True
+            user=self.user,email='testuser@test.com',primary=True,verified = True
         )
+        
+        self.login_url = reverse('rest_login')
+        self.login_data = {'username': 'testuser', 'password': 'testpassword'}
+        response = self.client.post(self.login_url, self.login_data)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.token = response.data['key']
+
+
+
     def tearDown(self):
         self.user.delete()
         self.email_address.delete()
@@ -26,29 +38,33 @@ class AuthenticationTests(APITestCase):
         self.assertEqual(response.status_code,status.HTTP_200_OK)
 
     def test_registeration(self):
-        url =reverse('user_register')
-        data = {'username':'testuser','email':'testuser@test.com','password1': 'newpassword', 'password2': 'newpassword','bio':'testpassword'}
+        url =reverse('rest_register')
+        data = {'username':'testuser1','email':'testuser@test.com1','password1': 'tranew@password', 'password2': 'tranew@password','user_type':'seller'}
         response = self.client.post(url,data)
         self.assertEqual(response.status_code,status.HTTP_201_CREATED)
 
-    def test_confirm_email(self):
-        url = reverse('confirm_email',kwargs={'key':self.email_address.key})
-        data = {'email':'testuser@test.com'}
-        response = self.client.post(url,data)
-        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        print(email)
 
-    def test_resend_confirmation(self):
-            url = reverse('resend_email_confirmation')
-            data = {'email': 'testuser@test.com'}
-            response = self.client.post(url, data)
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        #token extraction from email
+        match = re.search(r'account-confirm-email/([^/]+)/', email.body)
+        confirmation_key = match.group(1)
+
+        print("The key is:",confirmation_key)
+
+        #email confirmation endpoint testing
+        confirm_url = reverse('confirm_email')
+        data = {'key':f'{confirmation_key}'}
+        response = self.client.post(confirm_url,data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     def test_user_profile(self):
         self.client.login(username='testuser', password='testpassword')
         url = reverse('user_profile')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
     def test_password_reset(self):
         url = reverse('rest_password_reset')
         data = {'email': 'testuser@example.com'}
