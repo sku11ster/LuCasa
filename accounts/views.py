@@ -1,8 +1,7 @@
 from django.shortcuts import render
 from dj_rest_auth.registration.views import RegisterView,SocialLoginView
 from .serializers import CustomUserRegisterSerializer
-from rest_framework import generics, permissions,status
-from dj_rest_auth.views import PasswordResetView,PasswordResetConfirmView
+from rest_framework import generics,status
 
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_framework.views import APIView
@@ -13,17 +12,10 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .serializers import CustomUserRegisterSerializer,CustomUserSerializer
 from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC,EmailAddress
-from django.contrib.auth import views as auth_views
-from django.urls import reverse_lazy
-from rest_framework.decorators import api_view
-from django.core.mail import send_mail
-from django.conf import settings
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.auth.tokens import default_token_generator
+
+
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
-from rest_framework.exceptions import ValidationError
-from dj_rest_auth.views import PasswordResetView, PasswordResetConfirmView
+from dj_rest_auth.views import PasswordResetConfirmView
 
 
 
@@ -100,4 +92,11 @@ class AccountVerificationStatusView(APIView):
             return Response({'is_verified': is_verified}, status=status.HTTP_200_OK)
         except EmailAddress.DoesNotExist:
             return Response({'error':'Primary email not found for user'},status=status.HTTP_404_NOT_FOUND)
-        
+
+class UserProfileUpdateView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = CustomUserSerializer
+    lookup_field = 'username'
+
+    def get_object(self):
+        return self.request.user
