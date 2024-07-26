@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     #my apps
     'accounts',
+    'property',
 
     # 3rd parties
     'rest_framework',
