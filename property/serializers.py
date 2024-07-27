@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Property
+from .models import Property,Favorite
 
 class PropertySerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,3 +31,9 @@ class PropertySerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = request.user
         return Property.objects.create(user=user, **validated_data)
+    
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favorite
+        fields = ('user','property','created_at')

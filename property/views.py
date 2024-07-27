@@ -1,7 +1,7 @@
 from rest_framework import viewsets ,permissions
 from rest_framework.response import Response
-from .models import Property
-from .serializers import PropertySerializer
+from .models import Property,Favorite
+from .serializers import PropertySerializer,FavoriteSerializer
 from .permissions import IsPropertyOwner
 from rest_framework import generics
 from django.contrib.postgres.search import TrigramSimilarity
@@ -68,3 +68,15 @@ class PropertySearchView(generics.ListAPIView):
                 queryset = queryset.filter(**{field: value})
 
         return queryset
+    
+
+class FavoriteView(viewsets.ModelViewSet):
+    serializer_class = FavoriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Favorite.objects.all()
+
+    def get_queryset(self):
+        return Favorite.objects.filter(user = self.request.user)
+    
+    def perform_create(self,serializer):
+        serializer.save(user=self.request.user)

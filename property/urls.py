@@ -1,9 +1,10 @@
 from rest_framework.routers import DefaultRouter
-from .views import PropertyViewSet,PropertySearchView
+from .views import PropertyViewSet,PropertySearchView,FavoriteView
 from django.urls import path,include
 
 router = DefaultRouter()
 router.register(r'property', PropertyViewSet)
+router.register(r'favorites', FavoriteView)
 
 urlpatterns = [
     path('', include(router.urls)),
