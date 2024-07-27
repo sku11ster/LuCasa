@@ -5,6 +5,7 @@ from .serializers import PropertySerializer
 from .permissions import IsPropertyOwner
 from rest_framework import generics
 from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models import F, ExpressionWrapper, FloatField
 import logging
 
 
@@ -32,11 +33,18 @@ class PropertySearchView(generics.ListAPIView):
         queryset = Property.objects.all()
         search_params = self.request.query_params
 
-        title = search_params.get('title')
-        if title:
+        query = search_params.get('query')
+        if query:
             queryset = queryset.annotate(
-                similarity=TrigramSimilarity('title', title)
-            ).filter(similarity__gt=0.0025).order_by('-similarity')
+                title_similarity=TrigramSimilarity('title', query),
+                description_similarity=TrigramSimilarity('description', query)
+            ).annotate(
+                combined_similarity=ExpressionWrapper(
+                    F('title_similarity') + F('description_similarity'),
+                    output_field=FloatField()
+                )
+            ).filter(combined_similarity__gt=0.01).order_by('-combined_similarity')
+
 
         filters = {
             'property_type': 'property_type',

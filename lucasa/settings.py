@@ -219,3 +219,8 @@ LOGGING = {
         },
     },
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'property.pagination.CustomPagination',
+    'PAGE_SIZE': 10,  
+}
