@@ -13,11 +13,12 @@ class Property(models.Model):
         ('other', 'Other'),
     )
     
-    STATUS_CHOICES = (
-        ('available', 'Available'),
+    STATUS_CHOICES = [
+        ('for_sale', 'For Sale'),
+        ('for_rent', 'For Rent'),
         ('sold', 'Sold'),
         ('rented', 'Rented'),
-    )
+    ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='properties')
     title = models.CharField(max_length=255)

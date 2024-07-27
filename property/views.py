@@ -6,6 +6,7 @@ from .permissions import IsPropertyOwner
 from rest_framework import generics
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import F, ExpressionWrapper, FloatField
+from rest_framework.exceptions import NotFound
 import logging
 
 
@@ -22,8 +23,31 @@ class PropertyViewSet(viewsets.ModelViewSet):
         else:
             return [IsPropertyOwner()]
 
+    def get_queryset(self):
+        if self.request.method == 'GET':
+            queryset = Property.objects.filter(user=self.request.user)
+        else:
+            queryset = Property.objects.filter(user=self.request.user)
+        return queryset
+
     def list(self, request, *args, **kwargs):
-        return Response({'detail': 'This endpoint is not available'})
+
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+        
+    def retrieve(self, request, *args, **kwargs):
+
+        queryset = Property.objects.all()
+        pk = kwargs.get('pk')
+        try:
+            property_instance = queryset.get(pk=pk)
+        except Property.DoesNotExist:
+            raise NotFound("Property not found.")
+        
+        serializer = self.get_serializer(property_instance)
+        return Response(serializer.data)
 
 #Using Trigram for cost effective apporach
 class PropertySearchView(generics.ListAPIView):
@@ -57,6 +81,8 @@ class PropertySearchView(generics.ListAPIView):
             'bathrooms__lte': 'max_bathrooms',
             'garage__gte': 'min_garage',
             'garage__lte': 'max_garage',
+            'square_feet__gte': 'min_square_feet',
+            'square_feet__lte': 'max_square_feet',
             'city__icontains': 'city',
             'state__icontains': 'state',
             'country__icontains': 'country',

@@ -100,3 +100,6 @@ class UserProfileUpdateView(generics.UpdateAPIView):
 
     def get_object(self):
         return self.request.user
+    
+
+# class OwnerDetailView(APIVIEW):
