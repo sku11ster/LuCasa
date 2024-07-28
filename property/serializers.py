@@ -28,7 +28,8 @@ class PropertySerializer(serializers.ModelSerializer):
             'photos',
             'videos'
         ]
-        read_only_fields = ['user']  # Set user as read-only
+        # set to read_only so can be consumed in get requests only
+        read_only_fields = ['user']
     
 
 class FavoriteSerializer(serializers.ModelSerializer):
