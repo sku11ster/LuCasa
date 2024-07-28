@@ -1,19 +1,15 @@
 from django.shortcuts import render
 from dj_rest_auth.registration.views import RegisterView,SocialLoginView
-from .serializers import CustomUserRegisterSerializer
+from .serializers import CustomUserRegisterSerializer,OwnerProfileSerializer
 from rest_framework import generics,status
-
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from allauth.account.utils import send_email_confirmation
-
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .serializers import CustomUserRegisterSerializer,CustomUserSerializer
 from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC,EmailAddress
-
-
 from django.contrib.auth.models import User
 from dj_rest_auth.views import PasswordResetConfirmView
 
@@ -68,9 +64,40 @@ class ResendEmailConfirmationView(APIView):
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        serializer = CustomUserSerializer(request.user)
-        return Response(serializer.data)
+    def get(self, request,identifier = None,*args, **kwargs):
+        if identifier:
+            if identifier.isdigit():
+                #handling as ID
+                try:
+                    user = User.objects.get(id=identifier)
+                except User.DoesNotExist:
+                    return Response({'error':'User not found'},status = status.HTTP_404_NOT_FOUND)
+            else:
+                #handling as username
+                try:
+                    user = User.objects.get(username=identifier)
+                except User.DoesNotExist:
+                    return Response({'error':'User not found'},status=status.HTTP_404_NOT_FOUND)
+            serializer = CustomUserSerializer(user)
+            return Response(serializer.data,status=status.HTTP_404_NOT_FOUND)
+        else:
+            serializer = CustomUserSerializer(request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+
+        
+class PropertyDetailPageOwnerView(APIView):
+    permission_classes = [AllowAny]
+    def get(self,request,id=None,*args, **kwargs):
+        if id:
+            try:
+                user = User.objects.get(id = id)
+                serializer = OwnerProfileSerializer(user)
+            except User.DoesNotExist:
+                return Response({'error':'No Owner Found'})
+            
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
     
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):

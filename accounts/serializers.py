@@ -62,7 +62,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         email_address = EmailAddress.objects.filter(user=obj, email=obj.email).first()
         return email_address.verified if email_address else False
 
-# class OwnerProfileSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = CustomUser
-#         fields = ['username', 'profile_picture', 'id']
+class OwnerProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'profile_picture']

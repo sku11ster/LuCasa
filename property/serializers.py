@@ -5,6 +5,7 @@ class PropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = [
+            'user',
             'title',
             'description',
             'property_type',
@@ -36,4 +37,4 @@ class PropertySerializer(serializers.ModelSerializer):
 class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
-        fields = ('user','property','created_at')
+        fields = ['id', 'user', 'property', 'created_at']
