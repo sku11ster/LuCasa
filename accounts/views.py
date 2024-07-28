@@ -12,8 +12,8 @@ from .serializers import CustomUserRegisterSerializer,CustomUserSerializer
 from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC,EmailAddress
 from django.contrib.auth.models import User
 from dj_rest_auth.views import PasswordResetConfirmView
-
-
+from property.models import Property
+from django.db.models import Count
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
@@ -64,26 +64,38 @@ class ResendEmailConfirmationView(APIView):
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request,identifier = None,*args, **kwargs):
+    def get(self, request, identifier=None, *args, **kwargs):
+        user = None  # Initialize user variable
         if identifier:
             if identifier.isdigit():
-                #handling as ID
+                # Handle as ID
                 try:
-                    user = User.objects.get(id=identifier)
+                    user = User.objects.get(pk=identifier)
                 except User.DoesNotExist:
-                    return Response({'error':'User not found'},status = status.HTTP_404_NOT_FOUND)
+                    return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
             else:
-                #handling as username
+                # Handle as username
                 try:
                     user = User.objects.get(username=identifier)
                 except User.DoesNotExist:
-                    return Response({'error':'User not found'},status=status.HTTP_404_NOT_FOUND)
-            serializer = CustomUserSerializer(user)
-            return Response(serializer.data,status=status.HTTP_404_NOT_FOUND)
+                    return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         else:
-            serializer = CustomUserSerializer(request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            user = request.user
         
+        if not user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Serialize user data
+        serializer = CustomUserSerializer(user)
+        
+        # Count properties by type
+        property_counts = Property.objects.filter(user=user).values('property_type').annotate(count=Count('property_type'))
+        
+        # Construct response data
+        response_data = serializer.data
+        response_data['property_counts'] = list(property_counts)
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
         
 class PropertyDetailPageOwnerView(APIView):
@@ -120,7 +132,7 @@ class AccountVerificationStatusView(APIView):
         except EmailAddress.DoesNotExist:
             return Response({'error':'Primary email not found for user'},status=status.HTTP_404_NOT_FOUND)
 
-class UserProfileUpdateView(generics.UpdateAPIView):
+class UserProfileUpdateView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     lookup_field = 'username'

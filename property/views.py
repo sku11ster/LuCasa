@@ -29,6 +29,9 @@ class PropertyViewSet(viewsets.ModelViewSet):
         else:
             queryset = Property.objects.filter(user=self.request.user)
         return queryset
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
 
@@ -71,6 +74,7 @@ class PropertySearchView(generics.ListAPIView):
 
 
         filters = {
+            'user': 'user',
             'property_type': 'property_type',
             'status': 'status',
             'price__gte': 'min_price',

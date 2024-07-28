@@ -5,6 +5,7 @@ class PropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = [
+            'id',
             'user',
             'title',
             'description',
@@ -27,11 +28,7 @@ class PropertySerializer(serializers.ModelSerializer):
             'photos',
             'videos'
         ]
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user
-        return Property.objects.create(user=user, **validated_data)
+        read_only_fields = ['user']  # Set user as read-only
     
 
 class FavoriteSerializer(serializers.ModelSerializer):
