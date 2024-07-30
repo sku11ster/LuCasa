@@ -16,6 +16,8 @@ from django.contrib.auth.models import User
 from property.models import Property
 from django.db.models import Count
 
+
+
 # Create your views here.
 class SignUpView(generics.CreateAPIView):
     serializer_class = CustomUserRegisterSerializer
@@ -118,15 +120,6 @@ class PropertyDetailPageOwnerView(APIView):
     
     
 
-# class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-#     permission_classes = [AllowAny]
-    
-#     def post(self, request, *args, **kwargs):
-#         response = super().post(request, *args, **kwargs)
-#         if response.status_code == status.HTTP_400_BAD_REQUEST:
-#             return Response({"detail": "Password reset unsuccessful. The password reset link was invalid, possibly because it has already been used. Please request a new password reset."}, status=response.status_code)
-#         return Response({"detail": "Password has been reset with the new password."}, status=response.status_code)
-
 class AccountVerificationStatusView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
@@ -145,6 +138,3 @@ class UserProfileUpdateView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
-    
-
-# class OwnerDetailView(APIVIEW):

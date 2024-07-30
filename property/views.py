@@ -19,15 +19,14 @@ class PropertyViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.request.method == 'GET':
-            return [permissions.AllowAny()]
+            return [permissions.IsAuthenticated()]
         else:
             return [IsPropertyOwner()]
 
     def get_queryset(self):
-        if self.request.method == 'GET':
-            queryset = Property.objects.filter(user=self.request.user)
-        else:
-            queryset = Property.objects.filter(user=self.request.user)
+       
+        queryset = Property.objects.filter(user=self.request.user)
+    
         return queryset
     
     def perform_create(self, serializer):

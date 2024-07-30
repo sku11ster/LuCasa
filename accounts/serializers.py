@@ -1,4 +1,3 @@
-from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 from django.contrib.auth.models import AbstractUser
 from .models import CustomUser  # Adjust the import path according to your project structure
@@ -8,6 +7,8 @@ from django.contrib.auth.forms import PasswordResetForm
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import CustomUser  
+from django.contrib.auth import authenticate
+
 
 class CustomUserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
@@ -54,6 +55,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return email_address.verified if email_address else False
 
 class OwnerProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = CustomUser
         fields = ['username', 'profile_picture']
