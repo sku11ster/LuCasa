@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import accounts
 import os
+from datetime import timedelta
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +39,12 @@ DEBUG = True
 ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:8000",
+]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Application definition
@@ -58,9 +66,10 @@ INSTALLED_APPS = [
     'property',
 
     # 3rd parties
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
     'rest_framework.authtoken',
-    'dj_rest_auth',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -80,10 +89,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'allauth.account.middleware.AccountMiddleware',
 ]
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-]
-CORS_ALLOW_ALL_ORIGINS = True
 
 
 ROOT_URLCONF = "lucasa.urls"
@@ -121,7 +126,6 @@ DATABASES = {
     }
 }
 
-SESSION_COOKIE_SAMESITE = 'Lax'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -144,7 +148,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
@@ -153,12 +157,29 @@ AUTH_PASSWORD_VALIDATORS = [
 
 SITE_ID = 1
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    
+
+    'DEFAULT_PAGINATION_CLASS': 'property.pagination.CustomPagination',
+    'PAGE_SIZE': 10,  
+}
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'BLACKLIST_AFTER_ROTATION': True,  
+}
+
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-REST_USE_JWT = True  # Optional, if you want to use JWTs
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
@@ -172,19 +193,11 @@ REST_AUTH = {
     'REGISTER_SERIALIZER': 'accounts.serializers.CustomUserRegisterSerializer',
 }
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework.authentication.SessionAuthentication',
-#         'rest_framework.authentication.TokenAuthentication',
-#     ),
-#     'DEFAULT_RENDERER_CLASSES': (
-#         'rest_framework.renderers.JSONRenderer',
-#     ),
-# }
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
-
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -228,7 +241,4 @@ LOGGING = {
     },
 }
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'property.pagination.CustomPagination',
-    'PAGE_SIZE': 10,  
-}
+REST_USE_JWT = True

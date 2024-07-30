@@ -1,26 +1,32 @@
 from django.shortcuts import render
-from dj_rest_auth.registration.views import RegisterView,SocialLoginView
 from .serializers import CustomUserRegisterSerializer,OwnerProfileSerializer
-from rest_framework import generics,status
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+
+from rest_framework import generics,status,serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from allauth.account.utils import send_email_confirmation
-from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated,AllowAny
-from .serializers import CustomUserRegisterSerializer,CustomUserSerializer
+
+from allauth.account.utils import send_email_confirmation
 from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC,EmailAddress
+
+
+from .serializers import CustomUserRegisterSerializer,CustomUserSerializer
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from dj_rest_auth.views import PasswordResetConfirmView
 from property.models import Property
 from django.db.models import Count
 
-class GoogleLogin(SocialLoginView):
-    adapter_class = GoogleOAuth2Adapter
-
 # Create your views here.
-class LucasaRegisterView(RegisterView):
+class SignUpView(generics.CreateAPIView):
     serializer_class = CustomUserRegisterSerializer
+    def post(self,request,*args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            send_email_confirmation(request, user)
+            return Response({"message":"User created successfully"},status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
 # Confirm email view
 class ConfirmEmailView(APIView):
 
@@ -112,14 +118,14 @@ class PropertyDetailPageOwnerView(APIView):
     
     
 
-class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-    permission_classes = [AllowAny]
+# class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+#     permission_classes = [AllowAny]
     
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        if response.status_code == status.HTTP_400_BAD_REQUEST:
-            return Response({"detail": "Password reset unsuccessful. The password reset link was invalid, possibly because it has already been used. Please request a new password reset."}, status=response.status_code)
-        return Response({"detail": "Password has been reset with the new password."}, status=response.status_code)
+#     def post(self, request, *args, **kwargs):
+#         response = super().post(request, *args, **kwargs)
+#         if response.status_code == status.HTTP_400_BAD_REQUEST:
+#             return Response({"detail": "Password reset unsuccessful. The password reset link was invalid, possibly because it has already been used. Please request a new password reset."}, status=response.status_code)
+#         return Response({"detail": "Password has been reset with the new password."}, status=response.status_code)
 
 class AccountVerificationStatusView(APIView):
     permission_classes = [IsAuthenticated]

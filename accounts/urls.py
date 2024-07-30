@@ -1,14 +1,24 @@
 from django.urls import path,include,re_path
-from .views import GoogleLogin,ResendEmailConfirmationView,UserProfileView,ConfirmEmailView,PropertyDetailPageOwnerView
+from .views import SignUpView,ResendEmailConfirmationView,UserProfileView,ConfirmEmailView,PropertyDetailPageOwnerView
 from dj_rest_auth.views import PasswordResetConfirmView
 from .views import AccountVerificationStatusView,UserProfileUpdateView
-
-
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+    TokenBlacklistView
+)
 
 urlpatterns = [
-    path('auth/', include('dj_rest_auth.urls')),
-    path('auth/registration/', include('dj_rest_auth.registration.urls')),
-    path('auth/google/', GoogleLogin.as_view(), name='google_login'),
+
+    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('token/logout/', TokenBlacklistView.as_view(), name='token_blacklist'),
+
+    path('signup/', include('allauth.urls')),
+    path('signup/', SignUpView.as_view(),name='user-register'),
+    # path('auth/google/', GoogleLogin.as_view(), name='google_login'),
     path('confirm-email/', ConfirmEmailView.as_view(), name='confirm_email'),
     path('resend-confirmation/', ResendEmailConfirmationView.as_view(), name='resend_email_confirmation'),
     path('profile/', UserProfileView.as_view(), name='user_profile'),
