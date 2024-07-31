@@ -118,6 +118,6 @@ class PropertySuggestionsView(generics.RetrieveAPIView):
             return JsonResponse([], safe=False)
         
         # Perform a case-insensitive search
-        suggestions = Property.objects.filter(title__icontains=query).values_list('title', flat=True)[:10]
+        suggestions = Property.objects.filter(title__icontains=query).values('id','title')[:10]
         
-        return JsonResponse(list(suggestions), safe=False)
+        return Response(suggestions)
