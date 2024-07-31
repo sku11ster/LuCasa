@@ -7,6 +7,7 @@ from rest_framework import generics
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import F, ExpressionWrapper, FloatField
 from rest_framework.exceptions import NotFound
+from django.http import JsonResponse
 import logging
 
 
@@ -109,3 +110,14 @@ class FavoriteView(viewsets.ModelViewSet):
     
     def perform_create(self,serializer):
         serializer.save(user=self.request.user)
+
+class PropertySuggestionsView(generics.RetrieveAPIView):
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('query', '')
+        if not query:
+            return JsonResponse([], safe=False)
+        
+        # Perform a case-insensitive search
+        suggestions = Property.objects.filter(title__icontains=query).values_list('title', flat=True)[:10]
+        
+        return JsonResponse(list(suggestions), safe=False)
