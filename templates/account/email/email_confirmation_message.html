@@ -1,0 +1,14 @@
+<!-- templates/account/email/email_confirmation_message.html -->
+{% load i18n %}
+{% autoescape off %}
+Hi {{ user.username }},
+
+Please click on the link below to confirm your email address and complete the registration process:
+
+{{ activate_url }}
+
+If you did not request this email, please ignore it.
+
+Thanks,
+The {{ current_site.name }} team
+{% endautoescape %}

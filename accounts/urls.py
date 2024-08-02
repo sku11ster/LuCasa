@@ -19,7 +19,7 @@ urlpatterns = [
     path('signup/', include('allauth.urls')),
     path('signup/', SignUpView.as_view(),name='user-register'),
     
-    path('confirm-email/', ConfirmEmailView.as_view(), name='confirm_email'),
+    path('activate/', ConfirmEmailView.as_view(), name='confirm_email'),
     path('resend-confirmation/', ResendEmailConfirmationView.as_view(), name='resend_email_confirmation'),
     
     path('auth/password/reset/', PasswordResetView.as_view(), name='password_reset'),

@@ -96,7 +96,7 @@ ROOT_URLCONF = "lucasa.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -133,6 +133,12 @@ DATABASES = {
 
 
 #email backend
+
+# settings.py
+
+FRONTEND_URL = 'https://localhost:5173'
+ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

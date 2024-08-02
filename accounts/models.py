@@ -8,10 +8,11 @@ class CustomUser(AbstractUser):
         ('buyer','BUYER'),
         ('seller',"SELLER"),
     )
+    email = models.EmailField(unique=True)
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
     is_individual = models.BooleanField(default=True)
     company_name = models.CharField(max_length=255, blank=True, null=True)
-    contact = models.CharField(max_length=15, blank=True, null=True)  # Use 'contact' to match serializer field
+    contact = models.CharField(max_length=15, blank=True, null=True)  
     address = models.TextField(blank=True, null=True)
     website = models.TextField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
