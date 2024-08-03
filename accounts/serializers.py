@@ -8,7 +8,12 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import CustomUser  
 from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
+from dj_rest_auth.serializers import PasswordResetSerializer
 
+
+User = get_user_model()
 
 class CustomUserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
@@ -59,3 +64,4 @@ class OwnerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['username', 'profile_picture']
+

@@ -2,6 +2,8 @@
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
+
 
 class CustomUser(AbstractUser):
     USER_TYPE_CHOICES = (
@@ -22,3 +24,12 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    token = models.CharField(max_length=255)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timezone.timedelta(minutes=5)
+    

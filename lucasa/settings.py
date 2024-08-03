@@ -135,8 +135,9 @@ DATABASES = {
 #email backend
 
 # settings.py
+PASSWORD_RESET_TIMEOUT = 300  
 
-FRONTEND_URL = 'https://localhost:5173'
+FRONTEND_URL = 'http://localhost:5173'
 ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'
 
 

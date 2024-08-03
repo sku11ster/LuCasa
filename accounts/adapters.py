@@ -4,7 +4,7 @@ from django.conf import settings
 
 class CustomAccountAdapter(DefaultAccountAdapter):
     def get_email_confirmation_url(self, request, emailconfirmation):
-        url = reverse("account_confirm_email", args=[emailconfirmation.key])
+        url = reverse("confirm_email", args=[emailconfirmation.key])
         activate_url = f"{settings.FRONTEND_URL}{url}"
         return activate_url
     
@@ -21,3 +21,5 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         else:
             email_template = "account/email/email_confirmation"
         self.send_mail(email_template, emailconfirmation.email_address.email, ctx)
+
+    

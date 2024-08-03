@@ -16,6 +16,15 @@ from django.contrib.auth.models import User
 from property.models import Property
 from django.db.models import Count
 
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.http import JsonResponse
+from django.utils.encoding import force_str,force_bytes
+from .models import PasswordResetToken
 
 
 # Create your views here.
@@ -118,8 +127,6 @@ class PropertyDetailPageOwnerView(APIView):
             
         return Response(serializer.data,status=status.HTTP_200_OK)
     
-    
-
 class AccountVerificationStatusView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
@@ -138,3 +145,71 @@ class UserProfileUpdateView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+token_generator = PasswordResetTokenGenerator()
+
+# Custom Password Reset Request view
+class PasswordResetRequestView(APIView):
+    """
+    Handles password reset requests. Sends an email with a password reset link if the email exists.
+    """
+    def post(self,request,*args, **kwargs):
+        email = request.data.get('email')
+        if email:
+            try:
+                user = User.objects.get(email=email)
+            except:
+                return Response({'error':'Email not found'},status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({'error':'Email is required'},status=status.HTTP_400_BAD_REQUEST)
+        
+        token = token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        link = settings.FRONTEND_URL
+        reset_link = f"http://{link}/password/reset/confirm/{uid}/{token}/"
+
+
+        # mail
+        subject = "Password Reset Request"
+        message = render_to_string('registration/password_reset_email.html',{
+            'user': user,
+            'reset_link': reset_link,
+        })
+        send_mail(subject,message,settings.DEFAULT_FROM_EMAIL,[email])
+        return JsonResponse({'message': 'Password reset link sent.'})
+    
+
+class PasswordResetView(APIView):
+    """
+    Handles password reset. Validates the reset token and updates the password.
+    """
+    def post(self,request,*args, **kwargs):
+        uid = request.POST.get('uid')
+        token = request.POST.get('token')
+        new_password = request.POST.get('new_password')
+
+        if not uid or not token or not new_password:
+            return Response({'error':'All fields are required'},status=status.HTTP_400_BAD_REQUEST)
+        try:
+            uid = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return JsonResponse({'message': 'Invalid link or user does not exist.'}, status=400)
+
+        try:
+            reset_token = PasswordResetToken.objects.get(user=user, token=token)
+        except PasswordResetToken.DoesNotExist:
+            return JsonResponse({'message': 'Invalid or expired token.'}, status=400)
+
+        if reset_token.is_expired():
+            return JsonResponse({'message': 'Token has expired.'}, status=400)
+
+        if not token_generator.check_token(user, token):
+            return JsonResponse({'message': 'Invalid token.'}, status=400)
+
+        user.set_password(new_password)
+        user.save()
+
+        reset_token.delete()
+
+        return JsonResponse({'message': 'Password successfully reset.'})
