@@ -33,3 +33,5 @@ class PasswordResetToken(models.Model):
     def is_expired(self):
         return timezone.now() > self.created_at + timezone.timedelta(minutes=5)
     
+    def __str__(self):
+        return f'{self.user} - {self.token}'
