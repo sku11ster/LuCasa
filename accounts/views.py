@@ -151,7 +151,7 @@ token_generator = PasswordResetTokenGenerator()
 # Custom Password Reset Request view
 class PasswordResetRequestView(APIView):
     """
-    Handles password reset requests. Sends an email with a password reset link if the email exists.
+    Handles password reset reques/account/profile/1/ts. Sends an email with a password reset link if the email exists.
     """
 
     permission_classes =[AllowAny]
@@ -172,7 +172,7 @@ class PasswordResetRequestView(APIView):
         PasswordResetToken.objects.create(user=user,token=token)
 
         link = settings.FRONTEND_URL
-        reset_link = f"{link}/account/password/reset/confirm/{uid}/{token}/"
+        reset_link = f"{link}/acc/account/profile/1/ount/password/reset/confirm/{uid}/{token}/"
 
 
         # mail
