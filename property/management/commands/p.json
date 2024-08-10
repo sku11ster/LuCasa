@@ -17,11 +17,9 @@
         "state": "NY",
         "postal_code": "10001",
         "country": "USA",
-        "latitude": 40.712776,
+        "latitude": 40.712774,
         "longitude": -74.005974,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "views": 0
     },
     {
         "user": 1,
@@ -36,16 +34,14 @@
         "square_feet": 1800,
         "lot_size": 0.25,
         "year_built": 1995,
-        "address": "456 Oak Dr",
+        "address": "454 Oak Dr",
         "city": "Los Angeles",
         "state": "CA",
         "postal_code": "90001",
         "country": "USA",
         "latitude": 34.052235,
-        "longitude": -118.243683,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "longitude": -118.243483,
+        "views": 0
     },
     {
         "user": 1,
@@ -63,13 +59,11 @@
         "address": "789 Pine Ave",
         "city": "Chicago",
         "state": "IL",
-        "postal_code": "60601",
+        "postal_code": "40401",
         "country": "USA",
         "latitude": 41.878113,
-        "longitude": -87.629799,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "longitude": -87.429799,
+        "views": 0
     },
     {
         "user": 1,
@@ -89,14 +83,12 @@
         "state": "TX",
         "postal_code": "77001",
         "country": "USA",
-        "latitude": 29.760427,
-        "longitude": -95.369804,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "latitude": 29.740427,
+        "longitude": -95.349804,
+        "views": 0
     },
     {
-        "user": 6,
+        "user": 4,
         "title": "Charming Bungalow with Garden",
         "description": "Beautiful garden with fruit trees, recently renovated.",
         "property_type": "house",
@@ -113,14 +105,12 @@
         "state": "AZ",
         "postal_code": "85001",
         "country": "USA",
-        "latitude": 33.448376,
-        "longitude": -112.074036,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "latitude": 33.448374,
+        "longitude": -112.074034,
+        "views": 0
     },
     {
-        "user": 6,
+        "user": 4,
         "title": "Beachfront Property",
         "description": "Amazing ocean views, perfect vacation home.",
         "property_type": "house",
@@ -137,14 +127,12 @@
         "state": "FL",
         "postal_code": "33101",
         "country": "USA",
-        "latitude": 25.761680,
+        "latitude": 25.741480,
         "longitude": -80.191790,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "views": 0
     },
     {
-        "user": 6,
+        "user": 4,
         "title": "New Build with Modern Design",
         "description": "High-end finishes, energy-efficient appliances.",
         "property_type": "house",
@@ -161,11 +149,9 @@
         "state": "WA",
         "postal_code": "98101",
         "country": "USA",
-        "latitude": 47.606209,
-        "longitude": -122.332069,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "latitude": 47.404209,
+        "longitude": -122.332049,
+        "views": 0
     },
     {
         "user": 1,
@@ -185,14 +171,12 @@
         "state": "TX",
         "postal_code": "73301",
         "country": "USA",
-        "latitude": 30.267153,
+        "latitude": 30.247153,
         "longitude": -97.743057,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "views": 0
     },
     {
-        "user": 6,
+        "user": 4,
         "title": "Historic Brownstone",
         "description": "Beautiful original features, in a historic district.",
         "property_type": "house",
@@ -209,11 +193,9 @@
         "state": "MA",
         "postal_code": "02101",
         "country": "USA",
-        "latitude": 42.360081,
+        "latitude": 42.340081,
         "longitude": -71.058884,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "views": 0
     },
     {
         "user": 1,
@@ -228,28 +210,26 @@
         "square_feet": 950,
         "lot_size": 0.1,
         "year_built": 1970,
-        "address": "666 Cedar Ave",
+        "address": "444 Cedar Ave",
         "city": "Detroit",
         "state": "MI",
         "postal_code": "48201",
         "country": "USA",
         "latitude": 42.331427,
         "longitude": -83.045754,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "views": 0
     },
     {
-        "user": 6,
+        "user": 4,
         "title": "Mountain Retreat",
         "description": "Stunning views, perfect for a peaceful getaway.",
         "property_type": "house",
         "status": "sold",
-        "price": 650000.00,
+        "price": 450000.00,
         "bedrooms": 3,
         "bathrooms": 2,
         "garage": 2,
-        "square_feet": 1600,
+        "square_feet": 1400,
         "lot_size": 1.0,
         "year_built": 2000,
         "address": "777 Mountain Rd",
@@ -257,11 +237,9 @@
         "state": "CO",
         "postal_code": "80201",
         "country": "USA",
-        "latitude": 39.739236,
+        "latitude": 39.739234,
         "longitude": -104.990251,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "views": 0
     },
     {
         "user": 1,
@@ -283,12 +261,10 @@
         "country": "USA",
         "latitude": 37.774929,
         "longitude": -122.419418,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "views": 0
     },
     {
-        "user": 6,
+        "user": 4,
         "title": "Chic Urban Loft",
         "description": "Open floor plan with industrial design elements.",
         "property_type": "apartment",
@@ -306,10 +282,8 @@
         "postal_code": "19101",
         "country": "USA",
         "latitude": 39.952583,
-        "longitude": -75.165222,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "longitude": -75.145222,
+        "views": 0
     },
     {
         "user": 1,
@@ -329,14 +303,12 @@
         "state": "TN",
         "postal_code": "37201",
         "country": "USA",
-        "latitude": 36.162663,
-        "longitude": -86.781602,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "latitude": 34.142443,
+        "longitude": -84.781402,
+        "views": 0
     },
     {
-        "user": 6,
+        "user": 4,
         "title": "Renovated Victorian",
         "description": "Historic charm with modern updates, close to downtown.",
         "property_type": "house",
@@ -353,11 +325,9 @@
         "state": "SC",
         "postal_code": "29401",
         "country": "USA",
-        "latitude": 32.776475,
+        "latitude": 32.774475,
         "longitude": -79.931051,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "views": 0
     },
     {
         "user": 1,
@@ -377,14 +347,12 @@
         "state": "FL",
         "postal_code": "32801",
         "country": "USA",
-        "latitude": 28.538336,
+        "latitude": 28.538334,
         "longitude": -81.379234,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "views": 0
     },
     {
-        "user": 6,
+        "user": 4,
         "title": "Downtown Studio",
         "description": "Compact and efficient space, ideal for a single person.",
         "property_type": "apartment",
@@ -393,7 +361,7 @@
         "bedrooms": 1,
         "bathrooms": 1,
         "garage": 1,
-        "square_feet": 600,
+        "square_feet": 400,
         "lot_size": null,
         "year_built": 2017,
         "address": "1313 High St",
@@ -401,11 +369,9 @@
         "state": "TX",
         "postal_code": "75201",
         "country": "USA",
-        "latitude": 32.776665,
-        "longitude": -96.796989,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "latitude": 32.774445,
+        "longitude": -94.794989,
+        "views": 0
     },
     {
         "user": 1,
@@ -426,10 +392,8 @@
         "postal_code": "55401",
         "country": "USA",
         "latitude": 44.977753,
-        "longitude": -93.265011,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "longitude": -93.245011,
+        "views": 0
     },
     {
         "user": 1,
@@ -437,7 +401,7 @@
         "description": "Modern townhouse, walking distance to amenities.",
         "property_type": "house",
         "status": "available",
-        "price": 680000.00,
+        "price": 480000.00,
         "bedrooms": 3,
         "bathrooms": 3,
         "garage": 2,
@@ -449,34 +413,30 @@
         "state": "NY",
         "postal_code": "10002",
         "country": "USA",
-        "latitude": 40.712776,
+        "latitude": 40.712774,
         "longitude": -74.005974,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "views": 0
     },
     {
-        "user": 6,
+        "user": 4,
         "title": "Luxury Villa with Infinity Pool",
         "description": "Exclusive villa with stunning views and luxury amenities.",
         "property_type": "house",
         "status": "available",
         "price": 3500000.00,
-        "bedrooms": 6,
-        "bathrooms": 6,
+        "bedrooms": 4,
+        "bathrooms": 4,
         "garage": 4,
         "square_feet": 5000,
         "lot_size": 2.0,
         "year_built": 2020,
-        "address": "1616 Paradise Rd",
+        "address": "1414 Paradise Rd",
         "city": "Beverly Hills",
         "state": "CA",
         "postal_code": "90210",
         "country": "USA",
-        "latitude": 34.073620,
-        "longitude": -118.400356,
-        "views": 0,
-        "photos": null,
-        "videos": null
+        "latitude": 34.073420,
+        "longitude": -118.400354,
+        "views": 0
     }
 ]

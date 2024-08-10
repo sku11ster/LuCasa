@@ -1,7 +1,7 @@
-from rest_framework import viewsets ,permissions
+from rest_framework import viewsets ,permissions,serializers
 from rest_framework.response import Response
-from .models import Property,Favorite
-from .serializers import PropertySerializer,FavoriteSerializer
+from .models import Property,Favorite,PropertyImage, PropertyVideo
+from .serializers import PropertySerializer,FavoriteSerializer,PropertyVideoSerializer,PropertyImageSerializer
 from .permissions import IsPropertyOwner
 from rest_framework import generics
 from django.contrib.postgres.search import TrigramSimilarity
@@ -34,7 +34,6 @@ class PropertyViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
-
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -118,3 +117,55 @@ class PropertySuggestionsView(generics.RetrieveAPIView):
             return JsonResponse([], safe=False)
         suggestions = Property.objects.filter(title__icontains=query).values('id','title')[:10]
         return Response(suggestions)
+
+class PropertyImageCreateView(generics.CreateAPIView):
+    serializer_class = PropertyImageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        property_id = self.kwargs.get('property_id')
+        user = self.request.user
+        
+        try:
+            property_instance = Property.objects.get(id=property_id)
+        except Property.DoesNotExist:
+            raise serializers.ValidationError({"detail": "Property does not exist."})
+        
+        if property_instance.user != user:
+            raise serializers.ValidationError({"detail": "You do not own this property."})
+        
+        serializer.save(property=property_instance)
+
+class PropertyVideoCreateView(generics.CreateAPIView):
+    serializer_class = PropertyVideoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        property_id = self.kwargs.get('property_id')
+        user = self.request.user
+        
+        try:
+            property_instance = Property.objects.get(id=property_id)
+        except Property.DoesNotExist:
+            raise serializers.ValidationError({"detail": "Property does not exist."})
+        
+        if property_instance.user != user:
+            raise serializers.ValidationError({"detail": "You do not own this property."})
+        
+        serializer.save(property=property_instance)
+
+class PropertyImageListView(generics.ListAPIView):
+    serializer_class = PropertyImageSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        property_id= self.kwargs.get('property_id')
+        return PropertyImage.objects.filter(property_id=property_id)
+    
+class PropertyVideoListView(generics.ListAPIView):
+    serializer_class = PropertyVideoSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        property_id= self.kwargs.get('property_id')
+        return PropertyVideo.objects.filter(property_id=property_id)

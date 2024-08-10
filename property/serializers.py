@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Property,Favorite
+from .models import Property,Favorite,PropertyImage,PropertyVideo
 
 class PropertySerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,3 +36,16 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = ['id', 'user', 'property', 'created_at']
+
+
+
+class PropertyImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyImage
+        fields = ['id', 'image']
+
+
+class PropertyVideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyVideo
+        fields = ['id', 'video']

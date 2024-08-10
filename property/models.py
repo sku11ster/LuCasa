@@ -40,8 +40,6 @@ class Property(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     views = models.PositiveIntegerField(default=0)
-    photos = models.ImageField(upload_to='property_photos/', blank=True, null=True)
-    videos = models.FileField(upload_to='property_videos/', blank=True, null=True)
     date_listed = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     
@@ -51,6 +49,24 @@ class Property(models.Model):
     class Meta:
         verbose_name = "Property"
         verbose_name_plural = "Properties"
+
+class PropertyImage(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='property_photos/')
+
+    def __str__(self):
+        return f"{self.property.title} Image"
+    class Meta:
+        ordering = ['id'] 
+    
+class PropertyVideo(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='videos')
+    video = models.FileField(upload_to='property_videos/')
+
+    def __str__(self):
+        return f"{self.property.title} Video"
+    class Meta:
+        ordering = ['id'] 
 
 class Favorite(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
