@@ -42,6 +42,8 @@ class Property(models.Model):
     views = models.PositiveIntegerField(default=0)
     date_listed = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+    image_paths = models.TextField(blank=True, null=True)
+    video_paths = models.TextField(blank=True, null=True)
     
     def __str__(self):
         return self.title

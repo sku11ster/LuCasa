@@ -25,8 +25,8 @@ class PropertySerializer(serializers.ModelSerializer):
             'country',
             'latitude',
             'longitude',
-            'photos',
-            'videos'
+            'image_paths',
+            'video_paths'
         ]
         # set to read_only so can be consumed in get requests only
         read_only_fields = ['user']

@@ -153,19 +153,3 @@ class PropertyVideoCreateView(generics.CreateAPIView):
             raise serializers.ValidationError({"detail": "You do not own this property."})
         
         serializer.save(property=property_instance)
-
-class PropertyImageListView(generics.ListAPIView):
-    serializer_class = PropertyImageSerializer
-    permission_classes = [permissions.AllowAny]
-
-    def get_queryset(self):
-        property_id= self.kwargs.get('property_id')
-        return PropertyImage.objects.filter(property_id=property_id)
-    
-class PropertyVideoListView(generics.ListAPIView):
-    serializer_class = PropertyVideoSerializer
-    permission_classes = [permissions.AllowAny]
-
-    def get_queryset(self):
-        property_id= self.kwargs.get('property_id')
-        return PropertyVideo.objects.filter(property_id=property_id)
