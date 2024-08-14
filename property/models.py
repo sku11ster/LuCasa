@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
-import uuid
-import os
 
 User = get_user_model()
 
@@ -56,10 +54,7 @@ class Property(models.Model):
         verbose_name_plural = "Properties"
 
 
-def unique_image_path(instance, filename):
-    ext = filename.split('.')[-1]
-    unique_name = f"{uuid.uuid4().hex[:6]}_{instance.id}.{ext}"
-    return os.path.join('property_images/', unique_name)
+
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
@@ -67,36 +62,22 @@ class PropertyImage(models.Model):
 
     def __str__(self):
         return f"{self.property.title} Image"
+
     class Meta:
         ordering = ['id']
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if not self.image.name.endswith(f"{self.id}"):
-            old_image_name = self.image.name
-            self.image.name = unique_image_path(self, self.image.name)
-            super().save(update_fields=['image'])
-                
-            if default_storage.exists(old_image_name):
-                default_storage.delete(old_image_name)
 
-    
+
 class PropertyVideo(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='videos')
-    video = models.FileField(upload_to='property_videos/')
+    video = models.ImageField(upload_to='property_videos/')
 
     def __str__(self):
         return f"{self.property.title} Video"
+
     class Meta:
-        ordering = ['id'] 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if not self.video.name.endswith(f"{self.id}"):
-            old_video_name = self.video.name
-            self.video.name = unique_image_path(self, self.video.name)
-            super().save(update_fields=['video'])
-                
-            if default_storage.exists(old_video_name):
-                default_storage.delete(old_video_name)
+        ordering = ['id']
+    
+
 
 class Favorite(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)

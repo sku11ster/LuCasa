@@ -2,13 +2,12 @@ from rest_framework import viewsets ,permissions,serializers,status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Property,Favorite,PropertyImage,PropertyVideo
-from .serializers import PropertySerializer,FavoriteSerializer,PropertyVideoSerializer,PropertyImageSerializer
+from .serializers import PropertySerializer,FavoriteSerializer,PropertyImageSerializer,PropertyVideoSerializer
 from .permissions import IsPropertyOwner
 from rest_framework import generics
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import F, ExpressionWrapper, FloatField
 from rest_framework.exceptions import NotFound
-from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
@@ -121,100 +120,120 @@ class PropertySuggestionsView(generics.RetrieveAPIView):
         suggestions = Property.objects.filter(title__icontains=query).values('id','title')[:10]
         return Response(suggestions)
 
-
-class PropertyImageCreateView(APIView):
+class PropertyImageViewSet(viewsets.ViewSet):
     serializer_class = PropertyImageSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
-    def post(self, request, *args, **kwargs):
-        property_id = self.kwargs.get('property_id')
-        user = self.request.user
-        serializer = self.serializer_class(data=request.data)
 
+    def list(self, request, property_id=None):
         try:
             property_instance = Property.objects.get(id=property_id)
         except Property.DoesNotExist:
             return Response({"detail": "Property does not exist."}, status=status.HTTP_404_NOT_FOUND)
-        
-        if property_instance.user != user:
+
+        images = PropertyImage.objects.filter(property=property_instance)
+        serializer = PropertyImageSerializer(images, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    def create(self, request, property_id=None):
+        serializer = PropertyImageSerializer(data=request.data)
+        try:
+            property_instance = Property.objects.get(id=property_id)
+        except Property.DoesNotExist:
+            return Response({"detail": "Property does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        if property_instance.user != request.user:
             return Response({"detail": "You do not own this property."}, status=status.HTTP_403_FORBIDDEN)
-        
+
         if serializer.is_valid():
             serializer.save(property=property_instance)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class PropertyVideoCreateView(generics.CreateAPIView):
+    def destroy(self, request, pk=None, property_id=None):
+        try:
+            image_instance = PropertyImage.objects.get(id=pk, property_id=property_id)
+        except PropertyImage.DoesNotExist:
+            return Response({"detail": "Image not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if image_instance.property.user != request.user:
+            return Response({"detail": "You do not own this property."}, status=status.HTTP_403_FORBIDDEN)
+        image_instance.image.delete(save=False)
+        image_instance.delete()
+        return Response({"detail": "Image deleted."}, status=status.HTTP_200_OK)
+
+    def update(self, request, pk=None, property_id=None):
+        try:
+            image_instance = PropertyImage.objects.get(id=pk, property_id=property_id)
+        except PropertyImage.DoesNotExist:
+            return Response({"detail": "Image not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if image_instance.property.user != request.user:
+            return Response({"detail": "You do not own this property."}, status=status.HTTP_403_FORBIDDEN)
+
+        image_instance.image.delete(save=False)
+
+        serializer = PropertyImageSerializer(image_instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class PropertyVideoViewSet(viewsets.ViewSet):
     serializer_class = PropertyVideoSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
-    def perform_create(self, serializer):
-        property_id = self.kwargs.get('property_id')
-        user = self.request.user
-        
+
+    def list(self, request, property_id=None):
         try:
             property_instance = Property.objects.get(id=property_id)
         except Property.DoesNotExist:
-            raise serializers.ValidationError({"detail": "Property does not exist."}, code=status.HTTP_404_NOT_FOUND)
-        
-        if property_instance.user != user:
-            raise serializers.ValidationError({"detail": "You do not own this property."}, code=status.HTTP_403_FORBIDDEN)
-        
-        serializer.save(property=property_instance)
+            return Response({"detail": "Property does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        videos = PropertyVideo.objects.filter(property=property_instance)
+        serializer = PropertyVideoSerializer(videos, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
-class PropertyImageDeleteView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def delete(self, request, property_id, image_name, *args, **kwargs):
-        user = request.user
-
-        property_instance = get_object_or_404(Property, id=property_id)
-        if property_instance.user != user:
-            return Response({"detail": "You do not own this property."}, status=status.HTTP_403_FORBIDDEN)
+    def create(self, request, property_id=None):
+        serializer = PropertyVideoSerializer(data=request.data)
         try:
-            image_id = int(image_name.split('_')[1].split('.')[0])
-        except (IndexError, ValueError) as e:
-            return Response({"detail": "Invalid image name format."}, status=status.HTTP_400_BAD_REQUEST)
+            property_instance = Property.objects.get(id=property_id)
+        except Property.DoesNotExist:
+            return Response({"detail": "Property does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
-        try:
-            image_instance = PropertyImage.objects.get(property=property_instance, id=image_id)
-        except PropertyImage.DoesNotExist:
-            return Response({"detail": "Image does not exist."}, status=status.HTTP_404_NOT_FOUND)
-
-        image_path = image_instance.image.name
-        image_instance.delete()
-
-        if default_storage.exists(image_path):
-            default_storage.delete(image_path)
-
-        return Response({"detail": "Image deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
-
-class PropertyVideoDeleteView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def delete(self, request, property_id, video_name, *args, **kwargs):
-        user = request.user
-
-        property_instance = get_object_or_404(Property, id=property_id)
-
-        if property_instance.user != user:
+        if property_instance.user != request.user:
             return Response({"detail": "You do not own this property."}, status=status.HTTP_403_FORBIDDEN)
 
-        try:
-            video_id = int(video_name.split('_')[1].split('.')[0])
-        except (IndexError, ValueError) as e:
-            return Response({"detail": "Invalid video name format."}, status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            serializer.save(property=property_instance)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def destroy(self, request, pk=None, property_id=None):
         try:
-            video_instance = PropertyVideo.objects.get(property=property_instance, id=video_id)
+            video_instance = PropertyVideo.objects.get(id=pk, property_id=property_id)
         except PropertyVideo.DoesNotExist:
-            return Response({"detail": "Video does not exist."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Video not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        video_path = video_instance.video.name
-        
+        if video_instance.property.user != request.user:
+            return Response({"detail": "You do not own this property."}, status=status.HTTP_403_FORBIDDEN)
+
+        video_instance.video.delete(save=False)
+
         video_instance.delete()
+        return Response({"detail": "Video deleted."}, status=status.HTTP_200_OK)
 
-        if default_storage.exists(video_path):
-            default_storage.delete(video_path)
+    def update(self, request, pk=None, property_id=None):
+        try:
+            video_instance = PropertyVideo.objects.get(id=pk, property_id=property_id)
+        except PropertyVideo.DoesNotExist:
+            return Response({"detail": "Video not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({"detail": "Video deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        if video_instance.property.user != request.user:
+            return Response({"detail": "You do not own this property."}, status=status.HTTP_403_FORBIDDEN)
+
+        video_instance.video.delete(save=False)
+        
+        serializer = PropertyVideoSerializer(video_instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
