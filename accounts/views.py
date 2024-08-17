@@ -25,7 +25,8 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.utils.encoding import force_str,force_bytes
 from .models import PasswordResetToken
-
+from property.models import Favorite
+from property.serializers import FavoriteSerializer
 
 # Create your views here.
 class SignUpView(generics.CreateAPIView):
@@ -102,15 +103,18 @@ class UserProfileView(APIView):
         if not user:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        # Serialize user data
+        #  user data
         serializer = CustomUserSerializer(user)
-        
-        # Count properties by type
+        # Concatenating Properties count 
         property_counts = Property.objects.filter(user=user).values('property_type').annotate(count=Count('property_type'))
         
-        # Construct response data
         response_data = serializer.data
         response_data['property_counts'] = list(property_counts)
+
+        # Concatenating Favorite Properties
+        favorite_properties = Favorite.objects.filter(user=user)
+        favorite_serializer = FavoriteSerializer(favorite_properties,many=True)
+        response_data['favorite_properties'] = favorite_serializer.data
 
         return Response(response_data, status=status.HTTP_200_OK)
 

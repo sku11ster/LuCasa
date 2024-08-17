@@ -1,5 +1,4 @@
 from rest_framework import viewsets ,permissions,serializers,status
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Property,Favorite,PropertyImage,PropertyVideo
 from .serializers import PropertySerializer,FavoriteSerializer,PropertyImageSerializer,PropertyVideoSerializer
@@ -22,7 +21,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.request.method == 'GET':
-            return [permissions.IsAuthenticated()]
+            return [permissions.AllowAny()]
         else:
             return [IsPropertyOwner()]
 
