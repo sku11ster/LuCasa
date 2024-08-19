@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
+from ckeditor.fields import RichTextField
 
 User = get_user_model()
 
@@ -23,7 +24,7 @@ class Property(models.Model):
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='properties')
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = RichTextField()
     property_type = models.CharField(max_length=20, choices=PROPERTY_TYPES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
     price = models.DecimalField(max_digits=10, decimal_places=2)

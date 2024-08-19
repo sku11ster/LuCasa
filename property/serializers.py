@@ -27,7 +27,9 @@ class PropertySerializer(serializers.ModelSerializer):
             'latitude',
             'longitude',
             'image_paths',
-            'video_paths'
+            'video_paths',
+            'date_listed',
+            'last_updated',
         ]
         # set to read_only so can be consumed in get requests only
         read_only_fields = ['user']
@@ -36,7 +38,8 @@ class PropertySerializer(serializers.ModelSerializer):
 class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
-        fields = ['id', 'user', 'property', 'created_at']
+        fields = ['id', 'property', 'created_at']
+
 
 class PropertyImageSerializer(serializers.ModelSerializer):
     class Meta:
