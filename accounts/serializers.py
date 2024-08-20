@@ -63,5 +63,5 @@ class OwnerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'profile_picture']
+        fields = ['first_name','last_name', 'profile_picture','company_name','contact','website']
 

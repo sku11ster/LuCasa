@@ -46,6 +46,10 @@ class Property(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     image_paths = models.TextField(blank=True, null=True)
     video_paths = models.TextField(blank=True, null=True)
+    kitchen = models.PositiveIntegerField(null=True, blank=True)
+    floors = models.PositiveIntegerField(null=True, blank=True)
+    storage = models.PositiveIntegerField(null=True, blank=True)
+    parking = models.PositiveIntegerField(null=True, blank=True)
     
     def __str__(self):
         return self.title
