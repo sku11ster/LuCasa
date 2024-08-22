@@ -5,6 +5,7 @@ __pycache__/
 # Ignore virtual environments
 env/
 venv/
+myenv/
 
 # Ignore Django migration files
 */migrations/*
