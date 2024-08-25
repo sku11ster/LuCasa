@@ -40,6 +40,7 @@ class PropertySerializer(serializers.ModelSerializer):
     
 
 class FavoriteSerializer(serializers.ModelSerializer):
+    property=PropertySerializer()
     class Meta:
         model = Favorite
         fields = ['id', 'property', 'created_at']

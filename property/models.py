@@ -26,7 +26,7 @@ class Property(models.Model):
     title = models.CharField(max_length=255)
     description = RichTextField()
     property_type = models.CharField(max_length=20, choices=PROPERTY_TYPES)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='for_sale')
     price = models.DecimalField(max_digits=10, decimal_places=2)
     bedrooms = models.IntegerField()
     bathrooms = models.IntegerField()
@@ -57,7 +57,26 @@ class Property(models.Model):
     class Meta:
         verbose_name = "Property"
         verbose_name_plural = "Properties"
+    
+    def mark_as_sold(self):
+        Transaction.objects.create(
+            property=self,
+            seller=self.user,
+            transaction_type='sold',
+            amount=self.price 
+        )
+        self.status = 'sold'
+        self.save()
 
+    def mark_as_rented(self):
+        Transaction.objects.create(
+            property=self,
+            seller=self.user,
+            transaction_type='rented',
+            amount=self.price  
+        )
+        self.status = 'rented'
+        self.save()
 
 
 

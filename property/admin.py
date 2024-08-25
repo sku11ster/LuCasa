@@ -29,7 +29,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('property', 'seller', 'buyer', 'date', 'amount')
+    list_display = ('property','transaction_type', 'seller', 'buyer', 'date', 'amount')
     list_filter = ('date', 'property__property_type')
     search_fields = ('property__name', 'seller__username', 'buyer__username')
     date_hierarchy = 'date'

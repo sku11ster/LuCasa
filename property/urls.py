@@ -13,5 +13,6 @@ urlpatterns = [
     path('search/', PropertySearchView.as_view(), name='property-search'),
     path('suggestions/', PropertySuggestionsView.as_view(), name='property_suggestions'),
     path('transactions/', TransactionListView.as_view(), name='transaction-list'),
-
+    path('properties/<int:property_id>/transaction/<str:transaction_type>/', MarkPropertyTransactionView.as_view(), name='mark-property-transaction'),
+    path('dashboard/', DashboardDataView.as_view(), name='dashboard-data'),
 ]
