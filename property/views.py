@@ -1,7 +1,7 @@
 from rest_framework import viewsets ,permissions,serializers,status
 from rest_framework.response import Response
-from .models import Property,Favorite,PropertyImage,PropertyVideo
-from .serializers import PropertySerializer,FavoriteSerializer,PropertyImageSerializer,PropertyVideoSerializer
+from .models import Property,Favorite,PropertyImage,PropertyVideo,Transaction
+from .serializers import PropertySerializer,FavoriteSerializer,PropertyImageSerializer,PropertyVideoSerializer,TransactionSerializer
 from .permissions import IsPropertyOwner
 from rest_framework import generics
 from django.contrib.postgres.search import TrigramSimilarity
@@ -9,6 +9,9 @@ from django.db.models import F, ExpressionWrapper, FloatField
 from rest_framework.exceptions import NotFound
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from django.utils.dateparse import parse_date
+from django.db.models import Q
 
 import logging
 
@@ -236,3 +239,35 @@ class PropertyVideoViewSet(viewsets.ViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TransactionListView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+        property_type = request.query_params.get('property_type')
+        transaction_type = request.query_params.get('transaction_type')
+
+        filters = Q(seller = request.user)
+
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                filters &= Q(date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                filters &= Q(date__lte=end_date)
+
+        if property_type:
+            filters &= Q(property__property_type=property_type)
+
+        if transaction_type:
+            filters &= Q(transaction_type=transaction_type)
+
+        queryset = Transaction.objects.filter(filters)
+
+        serializer = TransactionSerializer(queryset, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)

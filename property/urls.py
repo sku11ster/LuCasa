@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from .views import PropertyViewSet,PropertySearchView,FavoriteView,PropertySuggestionsView,PropertyImageViewSet,PropertyVideoViewSet
+from .views import *
 from django.urls import path,include
 
 router = DefaultRouter()
@@ -12,4 +12,6 @@ urlpatterns = [
     path('', include(router.urls)),
     path('search/', PropertySearchView.as_view(), name='property-search'),
     path('suggestions/', PropertySuggestionsView.as_view(), name='property_suggestions'),
+    path('transactions/', TransactionListView.as_view(), name='transaction-list'),
+
 ]

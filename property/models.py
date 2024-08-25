@@ -91,3 +91,21 @@ class Favorite(models.Model):
 
     class Meta:
         unique_together=('user','property')
+
+class Transaction(models.Model):
+
+    TRANSACTION_TYPE_CHOICES = [
+        ('list', 'Listed'), 
+        ('sold', 'Sold'),
+        ('rented', 'Rented'),
+    ]
+
+    buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    seller = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sales')
+    property = models.ForeignKey(Property,on_delete=models.CASCADE)   
+    transaction_type = models.CharField(max_length=10,choices=TRANSACTION_TYPE_CHOICES)
+    amount = models.DecimalField(max_digits=10,decimal_places=2)
+    date = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.property.id} - {self.transaction_type}'

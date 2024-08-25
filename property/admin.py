@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Property,PropertyImage,PropertyVideo,Favorite
+from .models import *
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
@@ -20,10 +20,18 @@ class PropertyVideoAdmin(admin.ModelAdmin):
     list_display = ('property', 'video')
     search_fields = ('property__title',)
     list_filter = ('property__property_type', 'property__city', 'property__state', 'property__country')
-
+@admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'property','property_id', 'created_at','id')
     list_filter = ('user', 'property')
     search_fields = ('user__username', 'property__address')  # Adjust fields as needed
 
-admin.site.register(Favorite, FavoriteAdmin)
+
+@admin.register(Transaction)
+class TransactionAdmin(admin.ModelAdmin):
+    list_display = ('property', 'seller', 'buyer', 'date', 'amount')
+    list_filter = ('date', 'property__property_type')
+    search_fields = ('property__name', 'seller__username', 'buyer__username')
+    date_hierarchy = 'date'
+    ordering = ('-date',)
+
