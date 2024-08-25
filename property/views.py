@@ -332,7 +332,8 @@ class DashboardDataView(APIView):
 
         # Favorite Properties
         favorites = Favorite.objects.filter(user=request.user)
-        favorites_data = FavoriteSerializer(favorites, many=True).data
+        favorites_data = FavoriteSerializer(favorites, many=True,context={'request': request}).data
+
         
         active_status = ['for_sale','for_rent']
         

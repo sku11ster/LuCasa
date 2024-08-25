@@ -40,10 +40,18 @@ class PropertySerializer(serializers.ModelSerializer):
     
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    property=PropertySerializer()
+    
+    # property=PropertySerializer()
     class Meta:
         model = Favorite
         fields = ['id', 'property', 'created_at']
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        request = self.context.get('request')
+        if request and request.method == 'GET':
+            ret['property'] = PropertySerializer(instance.property).data
+        return ret
 
 
 class PropertyImageSerializer(serializers.ModelSerializer):
