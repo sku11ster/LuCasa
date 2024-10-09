@@ -1,8 +1,12 @@
 from rest_framework import viewsets ,permissions,serializers,status
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from .models import Property,Favorite,PropertyImage,PropertyVideo,Transaction
 from .serializers import PropertySerializer,FavoriteSerializer,PropertyImageSerializer,PropertyVideoSerializer,TransactionSerializer
 from .permissions import IsPropertyOwner
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import F, ExpressionWrapper, FloatField
@@ -124,9 +128,11 @@ class PropertySuggestionsView(generics.RetrieveAPIView):
         suggestions = Property.objects.filter(title__icontains=query).values('id','title')[:10]
         return Response(suggestions)
 
+
 class PropertyImageViewSet(viewsets.ViewSet):
     serializer_class = PropertyImageSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def list(self, request, property_id=None):
         try:
@@ -320,9 +326,9 @@ class DashboardDataView(APIView):
         last_7_days = now() - timedelta(days=7)
         last_30_days = now() - timedelta(days=30)
 
-        transactions_24h = Transaction.objects.filter(seller=user, date__gte=last_24_hours, transaction_type='sold')
-        transactions_7d = Transaction.objects.filter(seller=user, date__gte=last_7_days, transaction_type='sold')
-        transactions_30d = Transaction.objects.filter(seller=user, date__gte=last_30_days, transaction_type='sold')
+        transactions_24h = Transaction.objects.filter(seller=user, date__gte=last_24_hours)
+        transactions_7d = Transaction.objects.filter(seller=user, date__gte=last_7_days)
+        transactions_30d = Transaction.objects.filter(seller=user, date__gte=last_30_days)
 
         transactions_data = {
             "transactions_24h": TransactionSerializer(transactions_24h, many=True).data,

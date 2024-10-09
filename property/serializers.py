@@ -17,7 +17,6 @@ class PropertySerializer(serializers.ModelSerializer):
             'bathrooms',
             'garage',
             'square_feet',
-            'lot_size',
             'year_built',
             'address',
             'city',
@@ -57,8 +56,9 @@ class FavoriteSerializer(serializers.ModelSerializer):
 class PropertyImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyImage
-        fields = ['id', 'image']
+        fields = ['id', 'property', 'image']
 
+        
 class PropertyVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyVideo

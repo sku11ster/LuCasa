@@ -27,12 +27,11 @@ class Property(models.Model):
     description = RichTextField()
     property_type = models.CharField(max_length=20, choices=PROPERTY_TYPES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='for_sale')
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.IntegerField()
     bedrooms = models.IntegerField()
     bathrooms = models.IntegerField()
     garage = models.PositiveIntegerField(null=True, blank=True)
     square_feet = models.IntegerField()
-    lot_size = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     year_built = models.IntegerField(null=True, blank=True)
     address = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
@@ -81,15 +80,8 @@ class Property(models.Model):
 
 
 class PropertyImage(models.Model):
-    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='property_photos/')
-
-    def __str__(self):
-        return f"{self.property.title} Image"
-
-    class Meta:
-        ordering = ['id']
-
+    property = models.ForeignKey(Property, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='property_images/')
 
 class PropertyVideo(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='videos')
