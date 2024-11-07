@@ -20,7 +20,7 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('token/logout/', TokenBlacklistView.as_view(), name='token_blacklist'),
 
-    # path('signup/', include('allauth.urls')),
+    path('signup/', include('allauth.urls')),
     path('signup/', SignUpView.as_view(),name='user-register'),
     
     path('activate/<str:key>/', ConfirmEmailView.as_view(), name='confirm_email'),

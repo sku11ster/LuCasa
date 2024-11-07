@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .serializers import CustomUserRegisterSerializer,OwnerProfileSerializer
+from property.serializers import PropertySerializer
 
 from rest_framework import generics,status,serializers
 from rest_framework.views import APIView
@@ -80,10 +81,10 @@ class ResendEmailConfirmationView(APIView):
     
 # User profile data endpoint
 class UserProfileView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request, identifier=None, *args, **kwargs):
-        user = None  # Initialize user variable
+        user = None  
         if identifier:
             if identifier.isdigit():
                 # Handle as ID
@@ -103,13 +104,16 @@ class UserProfileView(APIView):
         if not user:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        #  user data
+
         serializer = CustomUserSerializer(user)
-        # Concatenating Properties count 
-        property_counts = Property.objects.filter(user=user).values('property_type').annotate(count=Count('property_type'))
-        
+
         response_data = serializer.data
-        response_data['property_counts'] = list(property_counts)
+
+        # Concatenating Properites with profile endpoint
+        properties = Property.objects.filter(user=user)
+        property_serializer = PropertySerializer(properties,many=True)
+        response_data['properties'] = property_serializer.data
+
 
         # Concatenating Favorite Properties
         favorite_properties = Favorite.objects.filter(user=user)

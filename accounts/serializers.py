@@ -50,7 +50,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'first_name', 'last_name', 'user_type', 'is_individual', 'company_name', 'contact', 'address', 'website', 'bio', 'social_links', 'profile_picture', 'profile_banner', 'email_verified']
+        fields = ['username','email', 'first_name', 'last_name', 'user_type', 'is_individual', 'company_name', 'contact', 'address', 'website', 'bio', 'social_links', 'profile_picture', 'profile_banner', 'email_verified']
         extra_kwargs = {
             'email': {'read_only': True} 
         }
