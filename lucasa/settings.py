@@ -139,6 +139,12 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+SITE_ID = 1
+#Frontend URL
+FRONTEND_URL = '127.0.0.1:5173'
+
+ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'
+
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
@@ -177,5 +183,3 @@ LOGGING = {
     },
 }
 
-#Frontend URL
-FRONTEND_URL = '127.0.0.1:8000'

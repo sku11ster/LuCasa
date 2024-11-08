@@ -36,6 +36,7 @@ class SignUpView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            
             send_email_confirmation(request, user)
             return Response({"message":"User created successfully"},status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
@@ -180,7 +181,7 @@ class PasswordResetRequestView(APIView):
         PasswordResetToken.objects.create(user=user,token=token)
 
         link = settings.FRONTEND_URL
-        reset_link = f"{link}/account/password/reset/confirm/{uid}/{token}/"
+        reset_link = f"https://{link}/account/password/reset/confirm/{uid}/{token}/"
 
 
         # mail
