@@ -25,12 +25,6 @@ htmlcov/
 # Ignore node_modules (if you use Node.js)
 node_modules/
 
-# Ignore static files (if using collectstatic)
-staticfiles/
-
-# Ignore media files
-media/
-
 # Ignore IDE/editor config files
 .vscode/
 .idea/
