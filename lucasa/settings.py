@@ -5,20 +5,25 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
-SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -65,7 +70,7 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage' 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 ROOT_URLCONF = "lucasa.urls"
 
 TEMPLATES = [
@@ -156,11 +161,7 @@ REST_AUTH = {
     'REGISTER_SERIALIZER': 'accounts.serializers.CustomUserRegisterSerializer',
 }
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATIC_URL = "/static/"
-if not DEBUG:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 LOGGING = {
     'version': 1,

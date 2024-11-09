@@ -1,36 +1,81 @@
-# Ignore Python bytecode files
-*.pyc
+# Python bytecode files
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
 
-# Ignore virtual environments
-env/
-venv/
-myenv/
-
-# Ignore Django migration files
+# Django migrations
 */migrations/*
+!*/migrations/__init__.py
 
-# Ignore database files
+# Environment files
+.env
+*.env
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Static files (if you're using local storage)
+staticfiles/
+static/
+
+# Media files (if you're using local storage)
+media/
+
+# Database files
+db.sqlite3
 *.sqlite3
-*.db
 
-# Ignore coverage reports
-.coverage
-coverage/
-htmlcov/
-
-# Ignore logs
+# Log files
 *.log
 
-# Ignore node_modules (if you use Node.js)
-node_modules/
+# Django secret key
+secret_key.txt
 
-# Ignore IDE/editor config files
+# IDEs
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
 
-# Ignore OS-specific files
+# macOS specific
 .DS_Store
+
+# Windows specific
 Thumbs.db
+
+# Python distributions
+*.egg
+*.egg-info
+dist/
+build/
+.eggs/
+
+# Docker files
+docker-compose.override.yml
+Dockerfile
+
+# Coverage reports
+.coverage
+*.coveragerc
+
+# Testing
+nosetests.xml
+coverage.xml
+*.pdb
+*.orig
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Pytest
+.cache/
+
+# Poetry dependency files
+poetry.lock
+
+# Ignore custom virtual environment
+myenv/
+
