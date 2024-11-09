@@ -141,7 +141,7 @@ AUTHENTICATION_BACKENDS = (
 
 SITE_ID = 1
 #Frontend URL
-FRONTEND_URL = '127.0.0.1:5173'
+FRONTEND_URL = 'lu-casa-frontend.vercel.app'
 
 ACCOUNT_ADAPTER = 'accounts.adapters.CustomAccountAdapter'
 
